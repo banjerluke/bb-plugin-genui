@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+- **UI in replies**, a select setting with three modes. *Prefer visuals* is the current behavior. *When it helps* allows one block only where it replaces something worse, such as a markdown table, pasted output, a flow or a series, and otherwise answers in prose. *Only when asked* answers in prose until you ask for a visual, chart, diagram, form or app; the agent then loads the plugin's `genui` skill, which carries the full language and component reference. Applies to sessions started after the change.
+- The `genui` skill (`skills/genui/SKILL.md`, declared in `package.json`) holds the full instructions and reference for the on-demand path.
+- `scripts/reply-ui-battery.mjs` runs the prompt battery for the three modes and records raw replies under `$BB_THREAD_STORAGE`.
+
 ### Fixed
 - PullRequest and the pull request column of Environments work again on BB 0.47. BB moved pull request status out of its SDK into the bundled GitHub PR Status plugin, so every PullRequest block said "BB couldn't read the pull request: t.environments.pullRequest is not a function". Both now read from that plugin, which must be enabled, so they need BB 0.47 or later; the other components still work on BB 0.45 and 0.46.
 - A ```ui block whose fence closes but whose spec does not compile now shows the error card instead of an empty frame. The block used to draw the longest prefix that still parsed, so a broken child list left a Card with its title and nothing inside it, and the reason sat in the collapsible Source panel. An unclosed block (the reply ended mid-spec) still draws what arrived, since that text was never finished code ([#15](https://github.com/ComicBit/bb-plugin-genui/issues/15)).
