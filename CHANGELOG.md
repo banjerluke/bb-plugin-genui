@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ## [Unreleased]
 
 ### Fixed
+- PullRequest and the pull request column of Environments work again on BB 0.47. BB moved pull request status out of its SDK into the bundled GitHub PR Status plugin, so every PullRequest block said "BB couldn't read the pull request: t.environments.pullRequest is not a function". Both now read from that plugin, which must be enabled, so they need BB 0.47 or later; the other components still work on BB 0.45 and 0.46.
 - A ```ui block whose fence closes but whose spec does not compile now shows the error card instead of an empty frame. The block used to draw the longest prefix that still parsed, so a broken child list left a Card with its title and nothing inside it, and the reason sat in the collapsible Source panel. An unclosed block (the reply ended mid-spec) still draws what arrived, since that text was never finished code ([#15](https://github.com/ComicBit/bb-plugin-genui/issues/15)).
 
 ## [0.3.1] - 2026-10-22
