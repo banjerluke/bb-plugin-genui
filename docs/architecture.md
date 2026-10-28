@@ -578,6 +578,10 @@ doesn't render cleanly.
   `toMarkdownWithImages` of the current roots with the photos the page has
   already found (`foundImages`, `foundWikiPhotos` in `ui/webLookups.ts`);
   Project components copy their placeholder line.
+- **CLI for on-request sessions:** *Only when asked* leaves `check_ui` and
+  `ui_examples` off, so the `genui` skill points at `bb genui check
+  --spec-stdin [--language app]` and `bb genui examples <component…>`,
+  which run the same checks and gallery reads from the agent's shell.
 - **Notifications and outlines:** BB's push previews skip fenced blocks. The
   instructions make the reply open with a plain answer sentence, so that
   sentence is what previews show.

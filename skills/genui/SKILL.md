@@ -7,6 +7,8 @@ description: "Write live Generative UI in a BB reply: ```ui blocks for charts, d
 
 The user asked for live UI. Read this, then put one ```ui or ```app block in your reply. If the plugin's Web lookups setting is off, Map, ImageSearch, Gallery {query} and https images won't load; use workspace files.
 
+This session has no check_ui or ui_examples tool. Wherever the text below names one, run it in your shell instead: `bb genui examples app Scene` prints what `ui_examples(["app", "Scene"])` would, and `bb genui check --spec-stdin [--language app] < block.txt` checks a block's content (without its fence lines) as `check_ui` would, exiting 1 when it has errors.
+
 Syntax reminders: Diagram takes one quoted string with `\n` between lines, never literal line breaks. Use `\"` only inside a quoted string; object keys and values are plain `"text"`.
 
 # Inline UI reference

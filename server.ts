@@ -252,18 +252,22 @@ export default async function plugin(bb: BbPluginApi) {
     }),
     presentation: { label: { pending: "Checking UI", completed: "Checked UI" }, suppress: true },
     async execute({ spec, language }, ctx) {
-      const { ok, report } =
-        (language ?? (spec.trimStart().startsWith("<") ? "app" : "ui")) === "app"
-          ? checkApp(spec)
-          : await checkSpec(
-              spec,
-              (request) => loadThreadFile(bb, ctx.threadId, request.path, request),
-              findImage,
-              projectReader(project, environments, ctx.threadId),
-            );
+      const { ok, report } = await check(spec, language, ctx.threadId);
       return { content: [{ type: "text", text: report }], isError: !ok };
     },
   });
+
+  /** check_ui and `bb genui check`: an app page checks alone; a ```ui spec reads files as the thread would. */
+  async function check(spec: string, language: "ui" | "app" | undefined, threadId: string) {
+    return (language ?? (spec.trimStart().startsWith("<") ? "app" : "ui")) === "app"
+      ? checkApp(spec)
+      : await checkSpec(
+          spec,
+          (request) => loadThreadFile(bb, threadId, request.path, request),
+          findImage,
+          projectReader(project, environments, threadId),
+        );
+  }
 
   bb.agents.registerTool({
     name: "ui_examples",
@@ -421,6 +425,38 @@ export default async function plugin(bb: BbPluginApi) {
               projectReader(project, environments, threadId),
             );
             return { exitCode: 0, stdout: `${markdown}\n` };
+          },
+        }),
+        check: cliCommand({
+          summary: "Check a ui block or app page before replying, as the check_ui tool does",
+          description:
+            "For sessions without the check_ui tool (UI in replies: Only when asked). Pass the block's content without its fence lines; Load and Snippet paths resolve for the thread running the command.",
+          options: {
+            spec: { type: "string", required: true, stdin: true, description: "The block's content; --spec-stdin reads it from stdin" },
+            language: { type: "enum", values: ["ui", "app"], description: 'Default "app" when the content starts with "<", else "ui"' },
+          },
+          async run(input, ctx) {
+            if (ctx.threadId === undefined) {
+              throw new PluginCliError("check runs inside a thread", {
+                code: "thread_required",
+                hint: "Run it from an agent's shell in BB, where BB_THREAD_ID is set",
+              });
+            }
+            const { ok, report } = await check(input.options.spec, input.options.language, ctx.threadId);
+            return { exitCode: ok ? 0 : 1, stdout: `${report}\n` };
+          },
+        }),
+        examples: cliCommand({
+          summary: "Print working examples and signatures of components, as the ui_examples tool does",
+          description: 'Name up to six components; "app" prints the ```app contract and example apps.',
+          positionals: [{ name: "components", description: "Component names, e.g. Map Scene app", required: true, variadic: true }],
+          async run(input) {
+            const components = input.positionals.components;
+            if (components.length > 6) {
+              throw new PluginCliError("name at most six components", { code: "invalid_value" });
+            }
+            const { ok, text } = await examplesReport(components);
+            return { exitCode: ok ? 0 : 1, stdout: `${text}\n` };
           },
         }),
       },

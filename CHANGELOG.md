@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 - **UI in replies**, a select setting with three modes. *Prefer visuals* is the current behavior. *When it helps* allows one block only where it replaces something worse, such as a markdown table, pasted output, a flow or a series, and otherwise answers in prose. *Only when asked* answers in prose until you ask for a visual, chart, diagram, form or app; the agent then loads the plugin's `genui` skill, which carries the full language and component reference. Applies to sessions started after the change.
-- The `genui` skill (`skills/genui/SKILL.md`, declared in `package.json`) holds the full instructions and reference for the on-demand path.
+- The `genui` skill (`skills/genui/SKILL.md`, declared in `package.json`) holds the full instructions and reference for the on-demand path. Since that mode leaves the `check_ui` and `ui_examples` tools off, `bb genui check --spec-stdin` and `bb genui examples <component…>` do the same from the agent's shell, and the skill points at them.
 - `scripts/reply-ui-battery.mjs` runs the prompt battery for the three modes and records raw replies under `$BB_THREAD_STORAGE`.
 
 ### Fixed
